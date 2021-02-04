@@ -7,7 +7,6 @@ class FriendListModel extends ChangeNotifier {
   List<FriendDomain> friends = [];
   List<int> friendPaymentList = [];
 
-  // String sumFriendPayment = '0';
   Map<String, String> friendPaymentMap = {};
 
   Future fetchFriends() async {
@@ -24,30 +23,6 @@ class FriendListModel extends ChangeNotifier {
         .doc(friend.documentID)
         .delete();
   }
-
-  // //友達一人当たりの支払金額を取得する
-  // Future getFriendPayment(FriendDomain friend) async {
-  //   final documents = await FirebaseFirestore.instance
-  //       .collection('payments')
-  //       .where('name', isEqualTo: friend.name)
-  //       .get();
-  //   final payments1 = documents.docs.map((doc) => PaymentDomain(doc)).toList();
-  //   if (payments1.isEmpty) {
-  //     this.sumFriendPayment = '0';
-  //   } else {
-  //     final payments2 = payments1.map((e) => (int.parse(e.money))).toList();
-  //     final sumFriendPayment = payments2.reduce((a, b) => a + b).toString();
-  //     this.sumFriendPayment = sumFriendPayment.toString();
-  //   }
-  // }
-  //
-  // createFriendPaymentMap() {
-  //   this.friends.forEach((friend) {
-  //     getFriendPayment(friend);
-  //     this.friendPaymentMap[friend.name] = this.sumFriendPayment.toString();
-  //   });
-  //   notifyListeners();
-  // }
 
   //友達一人当たりの支払金額を取得する
   Future getFriendPayment(FriendDomain friend) async {

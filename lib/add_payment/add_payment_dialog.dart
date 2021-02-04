@@ -27,7 +27,7 @@ class AddPaymentDialog extends StatelessWidget {
           children: <Widget>[
             AlertDialog(
                 title: Center(
-                  child: Text('新たな友達を追加'),
+                  child: Text('新たな支払いを追加'),
                 ),
                 content: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
