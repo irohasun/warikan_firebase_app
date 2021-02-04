@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "70238033206",
+    "project_id": "warikan-21ff4",
+    "storage_bucket": "warikan-21ff4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70238033206:android:6554753597a7ab6ffb8f97",
+        "android_client_info": {
+          "package_name": "com.warikan_firebase_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70238033206-csca4ki0tamn45qimq9j229h6ohmekkb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfLg6F6YY0qTP_rMeftn6nDEmG0HkhpxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70238033206-csca4ki0tamn45qimq9j229h6ohmekkb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
