@@ -1,150 +1,184 @@
-import 'package:firebase_todo_app/add_payment/add_payment_dialog.dart';
-import 'package:firebase_todo_app/domain/payment_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../lib/add_payment/add_payment_page.dart';
+import '../../lib/domain/group_domain.dart';
+import '../../lib/make_group/make_group_page.dart';
 import 'payment_list_model.dart';
 
 class PaymentListPage extends StatelessWidget {
+  final Group group;
+
+  PaymentListPage(this.group);
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PaymentListModel>(
-        create: (_) => PaymentListModel()
-          ..fetchPayments()
-          ..sumAllPayments(),
-        child: Stack(
-          children: [
-            Scaffold(
-              appBar: AppBar(
-                title: Center(child: Text('支払い一覧')),
-                automaticallyImplyLeading: false,
+    return ChangeNotifierProvider(
+      create: (context) => PaymentListModel(group),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Center(
+            child: Text('Tabikan'),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Consumer<PaymentListModel>(builder: (context, model, child) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildText(model.group.name),
+                  SizedBox(height: 8),
+                  _buildText(
+                      '${model.group.members.map((member) => member.name).toList()}'),
+                  SizedBox(height: 16),
+                  addPaymentRecordsButton(context, model),
+                  SizedBox(height: 16),
+                  _buildPaymentRecords(model),
+                  SizedBox(height: 16),
+                  _buildText('清算方法'),
+                  SizedBox(height: 8),
+                  _buildSettlementMethods(model),
+                  SizedBox(height: 16),
+                  // _buildActions(),
+                  SizedBox(height: 16),
+                  _buildEditGroupButton(context, model)
+                ],
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildText(String text) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget addPaymentRecordsButton(context, model) {
+    return ElevatedButton(
+      onPressed: () async {
+        Map<String, dynamic>? result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddPaymentPage(model.group),
+          ),
+        );
+        if (result != null) {
+          model.payment = result["payment"];
+          model.addPaymentRecord(result["payment"]);
+          model.makeSettlementMethods();
+        } else {}
+      },
+      child: Text('立て替え記録を追加'),
+    );
+  }
+
+  Widget _buildPaymentRecords(PaymentListModel model) {
+    return Consumer<PaymentListModel>(
+      builder: (context, model, child) {
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: (model.group.paymentRecords)?.length,
+          itemBuilder: (context, index) {
+            final payment = model.group.paymentRecords?[index];
+            return ListTile(
+              title: Text(payment!.name!),
+              subtitle: Text(
+                "${(payment.insteadMember)}が立て替え",
               ),
-              body: Consumer<PaymentListModel>(
-                builder: (context, model, child) {
-                  final payments = model.payments;
-                  final listTiles = payments
-                      .map(
-                        (payment) => ListTile(
-                          leading: Container(
-                            width: 150,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 10.0),
-                              child: Text(payment.name,
-                                  style: TextStyle(fontSize: 20.0)),
-                            ),
+              trailing: SizedBox(
+                width: 100, // 適切な幅を設定してください
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("￥${payment.amount}"),
+                    IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: () async {
+                        Map<String, dynamic>? result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                AddPaymentPage(model.group, payment: payment),
                           ),
-                          title: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5.0),
-                              child: Text(
-                                payment.event,
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                ),
-                              )),
-                          subtitle: Text(payment.money + '円',
-                              style: TextStyle(fontSize: 20.0)),
-                          trailing: IconButton(
-                              icon: Icon(Icons.edit), onPressed: () {}),
-                          onTap: () {},
-                          onLongPress: () {
-                            showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                        title: Center(
-                                          child: Text('${payment.name}削除しますか？'),
-                                        ),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text('Cancel')),
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                deletePayment(
-                                                    model, context, payment);
-                                              },
-                                              child: Text('OK')),
-                                        ]));
-                          },
-                        ),
-                      )
-                      .toList();
-                  return ListView(
-                    children: listTiles,
-                  );
-                },
-              ),
-              bottomNavigationBar: BottomAppBar(
-                child: Consumer<PaymentListModel>(
-                    builder: (context, model, child) {
-                  final sumPayment = model.sumAllPayment;
-                  return Container(
-                    width: 270,
-                    height: 35,
-                    child: Text(
-                      '合計金額:' + sumPayment + '円',
-                      style: TextStyle(
-                        fontSize: 23.0,
-                        fontFamily: '',
-                        color: Colors.white,
-                      ),
+                        );
+                        if (result != null && result["isDelete"] == false) {
+                          model.updatePayment(index, result["payment"]);
+                          model.makeSettlementMethods();
+                        } else if (result != null &&
+                            result["isDelete"] == true) {
+                          model.removePaymentRecord(result["payment"]);
+                          model.makeSettlementMethods();
+                        } else {}
+                      },
                     ),
-                    color: Colors.orange,
-                  );
-                }),
-              ),
-              floatingActionButton:
-                  Consumer<PaymentListModel>(builder: (context, model, child) {
-                return FloatingActionButton(
-                  child: Icon(Icons.add),
-                  onPressed: () async {
-                    await showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AddPaymentDialog());
-                    await model.fetchPayments();
-                    await model.sumAllPayments();
-                  },
-                );
-              }),
-            ),
-            Consumer<PaymentListModel>(builder: (context, model, child) {
-              return model.isLoading
-                  ? Container(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-                  : SizedBox();
-            })
-          ],
-        ));
-  }
-
-  Future deletePayment(PaymentListModel model, BuildContext context,
-      PaymentDomain payment) async {
-    try {
-      await model.deletePayment(payment);
-      await model.fetchPayments();
-      await model.sumAllPayments();
-      await _showDialog(context, '削除しました');
-    } catch (e) {
-      // _showDialog(context, e.toString());
-    }
-  }
-
-  _showDialog(BuildContext context, String title) {
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-                title: Center(
-                  child: Text(title),
+                  ],
                 ),
-                actions: <Widget>[
-                  FlatButton(
-                      onPressed: () => Navigator.pop(context, 'OK'),
-                      child: Text('OK')),
-                ]));
+              ),
+            );
+          },
+        );
+      },
+    );
   }
+
+  Widget _buildSettlementMethods(PaymentListModel model) {
+    return Consumer<PaymentListModel>(
+      builder: (context, model, child) {
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: (model.settlementMethods).length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic>? method = model.settlementMethods[index];
+            return ListTile(
+              title: Text("${method["from"]} から ${method["to"]} へ"),
+              trailing: Text("￥${method["amount"]}"),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildActions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        OutlinedButton(
+          onPressed: () {},
+          child: Text('URLをコピー'),
+        ),
+        OutlinedButton(
+          onPressed: () {},
+          child: Text('LINEでシェア'),
+        ),
+      ],
+    );
+  }
+}
+
+Widget _buildEditGroupButton(context, model) {
+  return ElevatedButton(
+    onPressed: () async {
+      Group? result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MakeGroupPage(group: model.group),
+        ),
+      );
+      if (result != null) {
+        model.updateGroup(result);
+      }
+    },
+    child: Text('グループ編集'),
+  );
 }
