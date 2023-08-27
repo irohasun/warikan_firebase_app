@@ -1,14 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'member_domain.dart';
 
-class PaymentDomain {
-  PaymentDomain(DocumentSnapshot doc) {
-    documentID = doc.id;
-    name = doc['name'];
-    money = doc['money'];
-    event = doc['event'];
-  }
-  String name;
-  String money;
-  String event;
-  String documentID;
+class Payment {
+  Payment(
+      {this.id,
+      this.name,
+      this.amount,
+      this.insteadMember,
+      this.targetMembers});
+
+  String? id = '';
+  String? name = '';
+  int? amount = 0;
+  String? insteadMember = '';
+  Set<String>? targetMembers = {};
 }

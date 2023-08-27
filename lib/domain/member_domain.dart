@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'payment_domain.dart';
 
-class FriendDomain {
-  FriendDomain(DocumentSnapshot doc) {
-    documentID = doc.id;
-    name = doc['name'];
-  }
-  String name;
-  String documentID;
+class Member {
+  Member({this.id, this.name,});
+
+  String? id = '';
+  String? name = '';
 }

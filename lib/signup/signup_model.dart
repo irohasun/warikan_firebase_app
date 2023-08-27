@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 class SignUpModel extends ChangeNotifier {
   String mail = '';
   String password = '';
+  String uid = '';
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -16,14 +17,16 @@ class SignUpModel extends ChangeNotifier {
       throw ('パスワードを入力してください');
     }
 
-    final User user = (await _auth.createUserWithEmailAndPassword(
+    final User? user = (await _auth.createUserWithEmailAndPassword(
             email: mail, password: password))
         .user;
 
-    FirebaseFirestore.instance.collection('users').add(
+    //uidをdocumentIdとしてusersに保存
+    FirebaseFirestore.instance.collection('users').doc(user?.uid).set(
       {
         'email': mail,
         'createdAt': Timestamp.now(),
+        'userId': user?.uid,
       },
     );
   }

@@ -1,14 +1,10 @@
-import 'package:firebase_todo_app/domain/book_domain.dart';
-import 'package:firebase_todo_app/presentation/signup/signup_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../login/login_page.dart';
+import 'signup_model.dart';
+
 class SignUpPage extends StatelessWidget {
-  final BookDomain book;
-
-  //this.bookを{}で囲むと必須ではなくなる
-  SignUpPage({this.book});
-
   @override
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
@@ -18,6 +14,7 @@ class SignUpPage extends StatelessWidget {
         create: (_) => SignUpModel(),
         child: Scaffold(
           appBar: AppBar(
+            backgroundColor: Colors.blueAccent,
             title: Text('新規登録'),
           ),
           body: Consumer<SignUpModel>(builder: (context, model, child) {
@@ -38,8 +35,11 @@ class SignUpPage extends StatelessWidget {
                     model.password = text;
                   },
                 ),
-                RaisedButton(
-                    child: Text('登録する'),
+                ElevatedButton(
+                    child: Text(
+                      '登録する',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     onPressed: () async {
                       try {
                         model.signUp();
@@ -50,8 +50,15 @@ class SignUpPage extends StatelessWidget {
                               child: Text('登録完了しました！'),
                             ),
                             actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginPage(),
+                                      ),
+                                    );
+                                  },
                                   child: Text('OK')),
                             ],
                           ),
@@ -64,7 +71,7 @@ class SignUpPage extends StatelessWidget {
                               child: Text(e.toString()),
                             ),
                             actions: <Widget>[
-                              FlatButton(
+                              ElevatedButton(
                                   onPressed: () => Navigator.pop(context, 'OK'),
                                   child: Text('OK')),
                             ],

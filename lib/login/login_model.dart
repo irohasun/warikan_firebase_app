@@ -1,12 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class LoginModel extends ChangeNotifier {
   String mail = '';
   String password = '';
+  String currentUserId = '';
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String getCurrentUserId() {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final currentUserId = _auth.currentUser!.uid;
+    return currentUserId;
+  }
 
   Future login() async {
     if (mail.isEmpty) {
@@ -20,7 +26,6 @@ class LoginModel extends ChangeNotifier {
       email: mail,
       password: password,
     );
-    final uid = result.user.uid;
-    // TODO 端末に保存
+    this.currentUserId = _auth.currentUser!.uid;
   }
 }

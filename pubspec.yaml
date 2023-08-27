@@ -1,22 +1,23 @@
-name: firebase_todo_app
+name: warikan_firebase_app
 description: A new Flutter application.
 
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.0
-  provider: ^4.3.2+3
-  firebase_core: ^0.5.2+1
-  firebase_analytics: ^5.0.2
-  firebase_auth: ^0.18.4+1
-  cloud_firestore: ^0.14.3+1
-  firebase_storage: ^5.2.0
-  image_picker: ^0.6.7+17
+  provider: ^6.0.1
+  firebase_core: ^2.11.0
+  firebase_analytics: ^10.3.0
+  firebase_auth: ^4.5.0
+  cloud_firestore: ^4.6.0
+  firebase_storage: ^11.1.2
+  collection: ^1.15.0
+  firebase_analytics_web: ^0.5.3
 
 dev_dependencies:
   flutter_test:

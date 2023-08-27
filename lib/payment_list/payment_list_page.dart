@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:warikan_firebase_app/payment_list/payment_list_model.dart';
 
-import '../../lib/add_payment/add_payment_page.dart';
-import '../../lib/domain/group_domain.dart';
-import '../../lib/make_group/make_group_page.dart';
-import 'payment_list_model.dart';
+import '../add_payment/add_payment_page.dart';
+import '../domain/group_domain.dart';
+import '../make_group/make_group_page.dart';
 
 class PaymentListPage extends StatelessWidget {
   final Group group;

@@ -1,57 +1,47 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_todo_app/domain/friend_domain.dart';
-import 'package:firebase_todo_app/domain/payment_domain.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class AddPaymentModel extends ChangeNotifier {
-  String paymentEvent = '';
-  String paymentName = '';
-  String paymentMoney = '';
-  bool isLoading = false;
-  List<String> paymentNames = [];
+import '../base_model.dart';
+import '../domain/group_domain.dart';
+import '../domain/payment_domain.dart';
 
-  startLoading() {
-    isLoading = true;
+class AddPaymentModel extends BaseModel {
+  AddPaymentModel(this.group, {this.payment});
+
+  Group group;
+  Payment? payment;
+
+  final TextEditingController paymentNameController = TextEditingController();
+  final TextEditingController paymentAmountController = TextEditingController();
+
+  @override
+  Future init() async {
+    payment = Payment(
+        name: '',
+        amount: 0,
+        insteadMember: group.members[0].name,
+        targetMembers: {});
   }
 
-  endLoading() {
-    isLoading = false;
-  }
-
-  Future fetchPaymentNames() async {
-    final documents =
-        await FirebaseFirestore.instance.collection('friends').get();
-    final friends1 = documents.docs.map((doc) => FriendDomain(doc)).toList();
-    final friends2 = friends1.map((doc) => doc.name).toList();
-    this.paymentNames = friends2;
+  void selectPayer(String payer) {
+    payment!.insteadMember = payer;
     notifyListeners();
   }
 
-  Future addPaymentToFirebase() async {
-    if (paymentName.isEmpty) {
-      throw ('名前を入力してください!');
+  void toggleMemberSelection(String memberName) {
+    if (payment!.targetMembers!.contains(memberName)) {
+      payment!.targetMembers!.remove(memberName);
+    } else {
+      payment!.targetMembers!.add(memberName);
     }
-    await FirebaseFirestore.instance.collection('payments').add(
-      {
-        'createdAt': Timestamp.now(),
-        'name': paymentName,
-        'money': paymentMoney,
-        'event': paymentEvent,
-      },
-    );
+    notifyListeners();
   }
 
-  Future updatepayment(PaymentDomain payment) async {
-    final document = FirebaseFirestore.instance
-        .collection('payments')
-        .doc(payment.documentID);
-    await document.update(
-      {
-        'updateAt': Timestamp.now(),
-        'name': paymentName,
-        'money': paymentMoney,
-        'event': paymentEvent,
-      },
-    );
+  void registerPayment() {
+// Firebaseを使って支払い情報を登録する処理を追加してください。
+//     payment = Payment(
+//         name: paymentName,
+//         amount: paymentAmount,
+//         insteadMember:
+//         targetMembers: );
   }
 }

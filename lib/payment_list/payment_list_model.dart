@@ -1,7 +1,7 @@
 import 'package:warikan_firebase_app/domain/group_domain.dart';
 import 'package:warikan_firebase_app/domain/payment_domain.dart';
 
-import '../../lib/base_model.dart';
+import '../base_model.dart';
 
 class PaymentListModel extends BaseModel {
   PaymentListModel(this.group);
