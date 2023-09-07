@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:warikan_firebase_app/domain/group_domain.dart';
-import 'package:warikan_firebase_app/domain/member_domain.dart';
 import 'package:warikan_firebase_app/payment_list/payment_list_page.dart';
-
 
 import 'make_group_model.dart';
 
@@ -21,43 +19,29 @@ class MakeGroupPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.blue,
           title: Center(child: Text('Tabikan')),
         ),
         body: Consumer<MakeGroupModel>(
           builder: (context, model, child) {
-            //更新時は初期値をmodelの変数に代入する
+            //更新時は初期値をmodelに代入する
             if (isUpdate) {
               model.groupTextController.text = group!.name;
-              // model.group!.name = group!.name;
-              // model.group!.members = group!.members;
               model.group = group;
             }
 
             return Column(
               children: <Widget>[
-                //グループ名
                 _buildGroupTextField(model),
-
-                // メンバー名
                 _buildMemberTextField(model, context),
-
                 SizedBox(height: 16.0),
-
                 _buildAddedMembers(model),
-
+                SizedBox(height: 16.0),
                 isUpdate
-                    ? Column(
-                        children: [
-                          _buildUpdateButton(model, context),
-                          _buildReverseButton(model, context)
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          _buildAddButton(model, context),
-                        ],
-                      )
+                    ? _buildUpdateButton(model, context)
+                    : _buildAddButton(model, context),
+                SizedBox(height: 16.0),
+                _buildReverseButton(model, context)
               ],
             );
           },
@@ -129,13 +113,13 @@ class MakeGroupPage extends StatelessWidget {
         child: Row(
           children: model.group!.members.asMap().entries.map((entry) {
             int index = entry.key;
-            Member member = entry.value;
+            String member = entry.value;
             return InkWell(
               onTap: () {
                 if (model.group!.members.length <= 2) {
                   _showDialog(context, '警告', 'メンバーは最低2人以上必要です');
                 } else {
-                  if (model.isPossibleRemove(member.name!)) {
+                  if (model.isPossibleRemove(member)) {
                     model.removeMembersName(index);
                   } else {
                     _showDialog(context, '警告', 'すでに支払いに関連しているメンバーは削除できません');
@@ -145,14 +129,14 @@ class MakeGroupPage extends StatelessWidget {
               },
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 4.0),
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Row(
                   children: [
-                    Text(member.name!),
+                    Text(member),
                     SizedBox(width: 4.0),
                     Text(
                       'x',
@@ -177,6 +161,7 @@ class MakeGroupPage extends StatelessWidget {
               if (model.group!.members.length < 2) {
                 _showDialog(context, '警告', '2人以上メンバーを追加してください');
               } else {
+                await model.registerGroup();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -201,6 +186,7 @@ class MakeGroupPage extends StatelessWidget {
     return ElevatedButton(
       onPressed: !model.isLoading
           ? () async {
+              await model.updateGroup();
               Navigator.pop(
                 context,
                 model.group,
@@ -228,6 +214,13 @@ class MakeGroupPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildBackButton(context, model) {
+    return OutlinedButton(
+      onPressed: () => Navigator.pop(context),
+      child: Text('戻る'),
+    );
+  }
 }
 
 void _showDialog(BuildContext context, String title, String content) {
@@ -252,7 +245,7 @@ void _addMember(MakeGroupModel model, BuildContext context) {
   String memberName = model.memberTextController.text;
   if (memberName != '') {
     bool nameExists =
-        model.group!.members.any((member) => member.name == memberName);
+        model.group!.members.any((member) => member == memberName);
     if (nameExists) {
       _showDialog(context, '警告', '同じ名前のメンバーが存在します');
     } else {

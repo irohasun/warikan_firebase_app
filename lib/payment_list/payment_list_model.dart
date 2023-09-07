@@ -10,18 +10,22 @@ class PaymentListModel extends BaseModel {
   Payment? payment;
   List<Map<String, dynamic>> settlementMethods = [];
 
+  Future init() async {
+    makeSettlementMethods();
+  }
+
   void addPaymentRecord(Payment result) {
-    group.paymentRecords!.add(result);
+    group.paymentRecords.add(result);
     notifyListeners();
   }
 
   void updatePayment(int index, Payment result) {
-    group.paymentRecords![index] = result;
+    group.paymentRecords[index] = result;
     notifyListeners();
   }
 
   void removePaymentRecord(paymentRecord) {
-    group.paymentRecords!.remove(paymentRecord);
+    group.paymentRecords.remove(paymentRecord);
     notifyListeners();
   }
 
@@ -51,15 +55,15 @@ class PaymentListModel extends BaseModel {
 
     for (final member in group.members) {
       int allPayAmount = 0;
-      map[member.name!] = 0;
+      map[member] = 0;
 
-      for (payment in group.paymentRecords!) {
-        if (member.name == payment!.insteadMember) {
+      for (payment in group.paymentRecords) {
+        if (member == payment!.insteadMember) {
           allPayAmount += payment!.amount!;
-          map[member.name!] = allPayAmount;
+          map[member] = allPayAmount;
         } else {
           allPayAmount += 0;
-          map[member.name!] = allPayAmount;
+          map[member] = allPayAmount;
         }
       }
     }
@@ -71,12 +75,12 @@ class PaymentListModel extends BaseModel {
     Map<String, int> map = {};
     for (final member in group.members) {
       int allPaidAmount = 0;
-      for (final payment in group.paymentRecords!) {
+      for (final payment in group.paymentRecords) {
         for (final target in payment.targetMembers!) {
-          if (member.name == target) {
+          if (member == target) {
             allPaidAmount +=
                 (payment.amount! / payment.targetMembers!.length).round();
-            map[member.name!] = allPaidAmount;
+            map[member] = allPaidAmount;
           } else {
             continue;
           }
@@ -93,10 +97,10 @@ class PaymentListModel extends BaseModel {
     Map<String, int> map = {};
 
     for (final member in group.members) {
-      final paidAmount = paidAmountMap[member.name] ?? 0;
-      final mustPayAmount = mustPayAmountMap[member.name] ?? 0;
+      final paidAmount = paidAmountMap[member] ?? 0;
+      final mustPayAmount = mustPayAmountMap[member] ?? 0;
       final netPayAmount = paidAmount - mustPayAmount;
-      map[member.name!] = netPayAmount;
+      map[member] = netPayAmount;
     }
     print("netPayMap${map}");
     return map; //{"A": 150, "B": 550, "C": -600, "D": -100}
@@ -144,59 +148,4 @@ class PaymentListModel extends BaseModel {
     print("map${settlementMethods}");
     notifyListeners();
   }
-
-// void addSettlementMethod(map) {
-//   settlementMethods.add(map);
-//   notifyListeners();
-// }
 }
-
-// class Payment {
-// Payment(
-// {required this.id,
-// required this.name,
-// required this.amount,
-// required this.insteadMember,
-// required this.targetMembers});
-//
-// String id;
-// String name;
-// int amount;
-// String insteadMember;
-// Set<String> targetMembers;
-// }
-//
-//
-//
-//
-// Payment payment1 = Payment(id:"1",name:"支払い1",insteadMember:"A",targetMembers:<String>{"A","B"},amount: 1000);
-// Payment payment2 = Payment(id:"2",name:"支払い2",insteadMember: "B",targetMembers: <String>{"B","C"},amount: 1500);
-// Payment payment3 = Payment(id:"3",name:"支払い3",insteadMember: "C",targetMembers: <String>{"A","C"},amount: 500);
-// Payment payment4 = Payment(id:"4",name:"支払い4",insteadMember: "B",targetMembers: <String>{"A","B","C","D"},amount: 400);
-// List<String> members = ["A","B","C","D"];
-// List<Payment> paymentRecordsDummy =[payment1,payment2,payment3,payment4];
-//
-// void makePaidAmountMap() {
-// Map<String, int> map={};
-//
-// for (final member in members) {
-// int allPaidAmount = 0;
-// for (final payment in paymentRecordsDummy) {
-// for(final target in payment.targetMembers){
-// if (member == target) {
-// allPaidAmount += (payment.amount/payment.targetMembers.length).round();
-// map[member] = allPaidAmount;
-// } else {
-// continue;
-// }
-// }
-//
-// }
-// }
-// print(map);
-// }
-//
-//
-// void main() {
-// makePaidAmountMap();
-// }

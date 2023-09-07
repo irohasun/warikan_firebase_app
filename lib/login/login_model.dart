@@ -8,11 +8,7 @@ class LoginModel extends ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String getCurrentUserId() {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final currentUserId = _auth.currentUser!.uid;
-    return currentUserId;
-  }
+  String getCurrentUserId() => _auth.currentUser!.uid;
 
   Future login() async {
     if (mail.isEmpty) {
@@ -22,7 +18,7 @@ class LoginModel extends ChangeNotifier {
       throw ('パスワードを入力してください');
     }
 
-    final result = await _auth.signInWithEmailAndPassword(
+    await _auth.signInWithEmailAndPassword(
       email: mail,
       password: password,
     );

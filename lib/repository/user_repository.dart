@@ -7,6 +7,7 @@ class UserRepository {
   final _db = FirebaseFirestore.instance;
   final _collectionPath = 'users';
 
+
   // User _toEntity(DocumentSnapshot doc) {
   //   DateTime? _toDate(dynamic value) =>
   //       value is Timestamp ? value.toDate() : null;

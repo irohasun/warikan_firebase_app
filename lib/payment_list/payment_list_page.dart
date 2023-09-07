@@ -31,20 +31,21 @@ class PaymentListPage extends StatelessWidget {
                 children: [
                   _buildText(model.group.name),
                   SizedBox(height: 8),
-                  _buildText(
-                      '${model.group.members.map((member) => member.name).toList()}'),
+                  _buildMemberText(model.group),
                   SizedBox(height: 16),
                   addPaymentRecordsButton(context, model),
                   SizedBox(height: 16),
                   _buildPaymentRecords(model),
                   SizedBox(height: 16),
-                  _buildText('清算方法'),
+                  _buildText('精算結果'),
                   SizedBox(height: 8),
                   _buildSettlementMethods(model),
                   SizedBox(height: 16),
                   // _buildActions(),
                   SizedBox(height: 16),
-                  _buildEditGroupButton(context, model)
+                  _buildEditGroupButton(context, model),
+                  SizedBox(height: 16),
+                  _buildBackButton(context, model)
                 ],
               );
             }),
@@ -61,6 +62,22 @@ class PaymentListPage extends StatelessWidget {
     );
   }
 
+  Widget _buildMemberText(Group group) {
+    return Row(
+      children: group.members.asMap().entries.map((entry) {
+        final member = entry.value;
+        final isLast = entry.key == group.members.length - 1;
+
+        return Row(
+          children: [
+            Text(member),
+            if (!isLast) Text('・'),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
   Widget addPaymentRecordsButton(context, model) {
     return ElevatedButton(
       onPressed: () async {
@@ -72,11 +89,10 @@ class PaymentListPage extends StatelessWidget {
         );
         if (result != null) {
           model.payment = result["payment"];
-          model.addPaymentRecord(result["payment"]);
           model.makeSettlementMethods();
         } else {}
       },
-      child: Text('立て替え記録を追加'),
+      child: Text('支払いを追加'),
     );
   }
 
@@ -86,11 +102,11 @@ class PaymentListPage extends StatelessWidget {
         return ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: (model.group.paymentRecords)?.length,
+          itemCount: (model.group.paymentRecords).length,
           itemBuilder: (context, index) {
-            final payment = model.group.paymentRecords?[index];
+            final payment = model.group.paymentRecords[index];
             return ListTile(
-              title: Text(payment!.name!),
+              title: Text(payment.name!),
               subtitle: Text(
                 "${(payment.insteadMember)}が立て替え",
               ),
@@ -164,21 +180,28 @@ class PaymentListPage extends StatelessWidget {
       ],
     );
   }
-}
 
-Widget _buildEditGroupButton(context, model) {
-  return ElevatedButton(
-    onPressed: () async {
-      Group? result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MakeGroupPage(group: model.group),
-        ),
-      );
-      if (result != null) {
-        model.updateGroup(result);
-      }
-    },
-    child: Text('グループ編集'),
-  );
+  Widget _buildEditGroupButton(context, model) {
+    return ElevatedButton(
+      onPressed: () async {
+        Group? result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MakeGroupPage(group: model.group),
+          ),
+        );
+        if (result != null) {
+          model.updateGroup(result);
+        }
+      },
+      child: Text('グループ編集'),
+    );
+  }
+
+  Widget _buildBackButton(context, model) {
+    return OutlinedButton(
+      onPressed: () => Navigator.pop(context),
+      child: Text('戻る'),
+    );
+  }
 }

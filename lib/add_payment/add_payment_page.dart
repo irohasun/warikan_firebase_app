@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../domain/group_domain.dart';
-import '../domain/member_domain.dart';
 import '../domain/payment_domain.dart';
 import 'add_payment_model.dart';
 
@@ -22,7 +21,7 @@ class AddPaymentPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("支払いを追加"),
+          title: Center(child: Text("支払いを追加")),
         ),
         body: Consumer<AddPaymentModel>(
           builder: (context, model, child) {
@@ -74,8 +73,7 @@ class AddPaymentPage extends StatelessWidget {
   }
 
   Widget _dropButtonMenu(context, model) {
-    print(
-        "Members: ${model.group.members.map((m) => m.name).toList()}"); // Add this line
+    print("Members: ${model.group.members}"); // Add this line
     print(
         "Instead Member Name: ${model.payment.insteadMember}"); // And this line
     // String dropdownValue = model.group.members[0].name;
@@ -85,10 +83,10 @@ class AddPaymentPage extends StatelessWidget {
         model.selectPayer(newValue);
       },
       items: model.group.members.map<DropdownMenuItem<String>>(
-        (Member? member) {
+        (String member) {
           return DropdownMenuItem<String>(
-            value: member!.name,
-            child: Text(member.name!),
+            value: member,
+            child: Text(member),
           );
         },
       ).toList(),
@@ -96,19 +94,26 @@ class AddPaymentPage extends StatelessWidget {
   }
 
   List<Widget> _buildCheckboxes(AddPaymentModel model) {
-    return model.group.members.map<Widget>((member) {
-      return Row(
-        children: [
-          Checkbox(
-            value: model.payment!.targetMembers!.contains(member.name!),
-            onChanged: (bool? value) {
-              model.toggleMemberSelection(member.name!);
-            },
-          ),
-          Text(member.name!),
-        ],
-      );
-    }).toList();
+    return [
+      Text('支払い対象者'),
+      Wrap(
+        alignment: WrapAlignment.start, // チェックボックスを横に配置する
+        children: model.group.members.map<Widget>((member) {
+          return Row(
+            mainAxisSize: MainAxisSize.min, // チェックボックスが横に並ぶようにする
+            children: [
+              Checkbox(
+                value: model.payment!.targetMembers!.contains(member),
+                onChanged: (bool? value) {
+                  model.toggleMemberSelection(member);
+                },
+              ),
+              Text(member),
+            ],
+          );
+        }).toList(),
+      ),
+    ];
   }
 
   Widget _buildPaymentEventTextField(AddPaymentModel model) {
@@ -156,8 +161,8 @@ class AddPaymentPage extends StatelessWidget {
   Widget _buildRegisterButton(
       AddPaymentModel model, BuildContext context, bool isUpdate) {
     return ElevatedButton(
-      onPressed: () {
-        model.registerPayment();
+      onPressed: () async {
+        isUpdate ? await model.updatePayment() : await model.registerPayment();
         Navigator.pop(context, {"payment": model.payment!, "isDelete": false});
       },
       child: isUpdate ? Text('更新') : Text('登録'),
@@ -183,7 +188,8 @@ class AddPaymentPage extends StatelessWidget {
                 AlertDialog(title: Text('本当に削除しますか？'), actions: <Widget>[
                   TextButton(
                     child: Text('はい'),
-                    onPressed: () {
+                    onPressed: () async {
+                      await model.deletePayment();
                       Navigator.of(context).pop();
                       Navigator.pop(context,
                           {"payment": model.payment, "isDelete": true});

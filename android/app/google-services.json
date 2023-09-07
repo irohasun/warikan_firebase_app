@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "434796732816",
-    "project_id": "warikaapp",
-    "storage_bucket": "warikaapp.appspot.com"
+    "project_number": "383715065673",
+    "project_id": "warikaapp-a694c",
+    "storage_bucket": "warikaapp-a694c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:434796732816:android:17fec2b1e8be457db65315",
+        "mobilesdk_app_id": "1:383715065673:android:108b133a8d0cac1a8fa498",
         "android_client_info": {
           "package_name": "com.warikan_firebase_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "434796732816-470oauv9gb6qlse9bfse3v53uhjb9sge.apps.googleusercontent.com",
+          "client_id": "383715065673-djuspiqmalt2mofc9psulpmf3rj4fdu6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAqp7y_YrByYMt3bE8KKhJszmW_SD4gFIA"
+          "current_key": "AIzaSyCTTyoXi8JEhqAAfhYdcwlxf42Tz2Vd4Jo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "434796732816-470oauv9gb6qlse9bfse3v53uhjb9sge.apps.googleusercontent.com",
+              "client_id": "383715065673-djuspiqmalt2mofc9psulpmf3rj4fdu6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

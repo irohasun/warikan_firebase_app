@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:warikan_firebase_app/make_group/make_group_page.dart';
+import 'package:warikan_firebase_app/login/login_page.dart';
+import 'package:warikan_firebase_app/signup/signup_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MakeGroupPage(),
+      home: LoginPage(),
     );
   }
 }

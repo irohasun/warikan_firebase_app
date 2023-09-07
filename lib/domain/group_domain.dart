@@ -1,41 +1,30 @@
-import 'package:warikan_firebase_app/domain/member_domain.dart';
 import 'package:warikan_firebase_app/domain/payment_domain.dart';
 
 class GroupField {
+  static const uid = 'uid';
   static const id = 'id';
   static const name = 'name';
   static const members = 'members';
-// static const createdAt = 'createdAt';
-// static const updatedAt = 'updatedAt';
+  static const paymentRecords = 'paymentRecords';
+  static const createdAt = 'createdAt';
+  static const updatedAt = 'updatedAt';
 }
 
 class Group {
-  Group({
-    this.id,
-    required this.name,
-    required this.members,
-    required this.paymentRecords,
-  });
+  Group(
+      {this.uid,
+      this.id,
+      required this.name,
+      required this.members,
+      required this.paymentRecords,
+      this.createdAt,
+      this.updatedAt});
 
+  String? uid = '';
   String? id = '';
   String name = '';
-  List<Member> members = [];
-  List<Payment>? paymentRecords = [];
+  List<String> members = [];
+  List<Payment> paymentRecords = [];
+  DateTime? createdAt;
+  DateTime? updatedAt;
 }
-
-// class Group {
-//   Group(
-//       {this.id,
-//         required this.name,
-//         required this.members,
-//         this.paymentRecords,
-//         required this.createdAt,
-//         required this.updatedAt});
-//
-//   String? id = '';
-//   String name = '';
-//   List<Member> members = [];
-//   List<Payment>? paymentRecords = [];
-//   DateTime createdAt;
-//   DateTime updatedAt;
-// }
